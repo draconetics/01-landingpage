@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const DB_URI = 'mongodb://localhost:27017/01landingpage';
+//const DB_URI = 'mongodb://localhost:27017/01landingpage';
+const DB_URI = 'mongodb+srv://draconetics:draconetics@cluster0-74ml0.mongodb.net/test?retryWrites=true&w=majority'
 const DB_TESTING = 'mongodb://localhost:27017/01testing';
     
 function connect() {
