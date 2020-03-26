@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-//const DB_URI = 'mongodb://localhost:27017/01landingpage';
-const DB_URI = 'mongodb+srv://draconetics:draconetics@cluster0-74ml0.mongodb.net/test?retryWrites=true&w=majority'
+const DB_URI = 'mongodb://localhost:27017/01landingpage';
+const DB_PROD = 'mongodb+srv://draconetics:draconetics@cluster0-74ml0.mongodb.net/test?retryWrites=true&w=majority'
 const DB_TESTING = 'mongodb://localhost:27017/01testing';
     
 function connect() {
@@ -9,10 +9,13 @@ function connect() {
             if (process.env.NODE_ENV === 'test') 
             {
                 connectToDataBase(resolve, reject, DB_TESTING);                
-            } else 
+            } 
+            if (process.env.NODE_ENV === 'production') 
             {
-                connectToDataBase(resolve, reject, DB_URI);                
+                connectToDataBase(resolve, reject, DB_PROD);                
             }
+            
+            connectToDataBase(resolve, reject, DB_URI);                
         }
     );//end promise
 }
