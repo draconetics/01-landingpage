@@ -76,7 +76,7 @@ describe('Emails', function () {
           .catch((err) => done(err));
     });
 
-    it('should FAIL because email is unique', (done) => 
+    it('should FAIL because email is not unique', (done) => 
     {
         chai.request(server).post('/emails')
           .send(jhonEmailObj)
@@ -90,7 +90,6 @@ describe('Emails', function () {
             done();
           })
           .catch((err) => done(err));
-        
     });
 
       

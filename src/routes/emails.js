@@ -1,8 +1,9 @@
 const router = require('express-promise-router')();
+const Email = require('../models/email');
 
-const { index, msg, newEmail } = require('../controllers/email');
+const { paginatedResults, paginatedEmails, msg, newEmail } = require('../controllers/email');
 
-router.get('/', index);
+router.get('/', paginatedResults(Email), paginatedEmails);
 router.get('/msg', msg);
 router.post('/', newEmail);
 
