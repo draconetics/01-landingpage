@@ -15,6 +15,7 @@ function connect() {
                 connectToDataBase(resolve, reject, DB_PROD);                
             }
             
+            //developer mode
             connectToDataBase(resolve, reject, DB_URI);                
         }
     );//end promise

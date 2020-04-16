@@ -1,57 +1,24 @@
 const Email = require('../models/email');
+const {ErrorHandler} = require('../models/error');
 const { validationResult, isEmpty } = require('./utils/emailValidator');
 
-const errorJson = {
-    code: "",
-    status:"",//METHOD_NOT_ALLOWED
-    message:"",//Request method 'DELETE' not supported
-    errors:[
-        ""//DELETE method is not supported for this request. Supported methods are GET 
-    ]
-}
-
 module.exports = {
-    paginatedResults:  function(model){
-        return async (req, res, next) => {
-            const page = parseInt(req.query.page) || 1
-            const limit = parseInt(req.query.limit) || 5
-        
-            const startIndex = (page - 1) * limit
-            const endIndex = page * limit
-        
-            const results = {}
-        
-            if (endIndex < await model.countDocuments().exec()) {
-              results.next = {
-                page: page + 1,
-                limit: limit
-              }
-            }
-            
-            if (startIndex > 0) {
-              results.previous = {
-                page: page - 1,
-                limit: limit
-              }
-            }
-            try {
-              results.results = await model.find().limit(limit).skip(startIndex).exec()
-              res.paginatedResults = results
-              next()
-            } catch (e) {
-              res.status(500).json({ message: e.message })
-            }
-        }
-    },
     paginatedEmails: function(req, res){
-        console.log("getting paginated emails.");
-        res.json(res.paginatedResults);
+        console.log("++getting paginated emails.");
+        res.status(200).json(res.paginatedResults);
     },
     msg: function( req, res, next ) {
         res.status(200).json({msg: "hello world."});
     },
     newEmail: async function( req, res, next ) {
+        //if req is not json
+        if(req.accepts("json"))
+          return res.status(406).json(new ErrorHandler(406, 'CLIENT_ERROR', 'Only json request'));
         
+        // console.log(req.headers);
+        // console.log('**************');
+        // console.log(req.headers['content-type']);
+
         const newEmail = new Email(req.body);
         //console.log(newUser);
         const errors = validationResult(req.body);
