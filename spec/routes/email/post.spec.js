@@ -4,6 +4,8 @@ let chai = require("chai");
 let chaiHttp = require("chai-http");
 let server = require("../../../src/server");
 
+
+
 //Assertion Style
 //chai.should();
 chai.use(chaiHttp);
@@ -14,9 +16,10 @@ describe('Emails', function () {
 
     const jhonEmailObj = 
     {
-      name: 'john',
+      name: 'john doe',
       email: 'john@doe.com',
     }
+    
     
     before(function (done) 
     {
@@ -54,10 +57,14 @@ describe('Emails', function () {
     {
       chai.request(server).post('/emails')
           .send({ name: 'name02' })
-          .then((res) => {
-            const body = res.body;
-            expect(body.status)
-              .to.equal('EMAIL_FIELD_REQUIRED')
+          .then((response) => {
+            response.should.have.status(422);
+            response.body.should.be.a('object');
+            response.body.should.have.property('statusCode')
+            response.body.should.have.property('status')
+            response.body.should.have.property('message')
+
+            expect(response.body.status).to.equal('CLIENT_ERROR')
             done();
           })
           .catch((err) => done(err));
@@ -67,10 +74,14 @@ describe('Emails', function () {
     {
         chai.request(server).post('/emails')
           .send({ email: 'sample@gmail.com' })
-          .then((res) => {
-            const body = res.body;
-            expect(body).to.be.an('object');
-            expect(body.status).to.equal('NAME_FIELD_REQUIRED')
+          .then((response) => {
+            response.should.have.status(422);
+            response.body.should.be.a('object');
+            response.body.should.have.property('statusCode')
+            response.body.should.have.property('status')
+            response.body.should.have.property('message')
+
+            expect(response.body.status).to.equal('CLIENT_ERROR')
             done();
           })
           .catch((err) => done(err));
@@ -80,13 +91,17 @@ describe('Emails', function () {
     {
         chai.request(server).post('/emails')
           .send(jhonEmailObj)
-          .then((res) => {
-            const body = res.body;
-            expect(body).to.be.an('object');
-            expect(body).to.contain.property('code');
-            expect(body).to.contain.property('errmsg');
-            expect(body.code).to.equal(11000);
-            expect(body.errmsg).to.match(/E11000\sduplicate\skey\serror\scollection/);
+          .then((response) => {
+            response.should.have.status(500);
+            response.body.should.be.a('object');
+            response.body.should.have.property('statusCode')
+            response.body.should.have.property('status')
+            response.body.should.have.property('message')
+
+            expect(response.body.status).to.equal('SERVER_ERROR')
+            expect(response.body.message[0]).to.equal('Error while saving new Email')
+            
+            
             done();
           })
           .catch((err) => done(err));

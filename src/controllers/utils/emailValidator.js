@@ -1,3 +1,7 @@
+const { MAX_LENGHT_EMAIL, MIN_LENGHT_EMAIL, 
+        MAX_LENGHT_NAME, MIN_LENGHT_NAME} = require('./constants');
+const { ErrorHandler } = require('../../models/error');
+
 const validationResult = function (data) {
 
     const errorProperties = existAllProperties(data);
@@ -19,17 +23,14 @@ const existAllProperties = function(obj) {
     let errorProperty = {}
     if (!obj.hasOwnProperty('name')) 
     {
-        errorProperty.code = 422;
-        errorProperty.status = "NAME_FIELD_REQUIRED";
-        errorProperty.message = "Name field is required";
+        errorProperty = new ErrorHandler(422,"CLIENT_ERROR", "Name field is required");
     }
 
     if (!obj.hasOwnProperty('email')) 
     {
-        errorProperty.code = 422;
-        errorProperty.status = "EMAIL_FIELD_REQUIRED";
-        errorProperty.message = "Email field is required";
+        errorProperty = new ErrorHandler(422,"CLIENT_ERROR", "Email field is required");
     }
+
     return errorProperty;
 }
 
@@ -40,20 +41,17 @@ const isEmpty = function(obj) {
 const validateEmail = function (email) {
     const isEmptyField = email.length == 0;
     const isCorrectEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+    const isWrongLength = email.length < MIN_LENGHT_EMAIL || email.length > MAX_LENGHT_EMAIL
     let errorMessage = {};
     
     if(isEmptyField)
     {
-        errorMessage.code = 422;
-        errorMessage.status = "EMAIL_NOT_ALLOWED";
-        errorMessage.message = "Email is empty field";
+        errorMessage = new ErrorHandler(422,"CLIENT_ERROR", "Email is empty field");   
     }
 
-    if(!isCorrectEmail)
+    if(isWrongLength || !isCorrectEmail)
     {
-        errorMessage.code = 422;
-        errorMessage.status = "EMAIL_FORMAT_NOT_ALLOWED";
-        errorMessage.message = "Email is not recognized.";
+        errorMessage = new ErrorHandler(422,"CLIENT_ERROR", "Email is not recognized.");   
     }
 
     return errorMessage;
@@ -61,14 +59,18 @@ const validateEmail = function (email) {
 
 const validateName = function (name) {
     let errorMessage = {};
-    let isEmptyField = name.length <= 3;
+    let isEmptyField = name.length == 0;
     let isAlphabetic = /^[a-zA-Z\s]*$/.test(name);
+    const isWrongLength = name.length < MIN_LENGHT_NAME || name.length > MAX_LENGHT_NAME
 
-    if( isEmptyField || !isAlphabetic)
+    if(isEmptyField)
     {
-        errorMessage.code = 422;
-        errorMessage.status = "NAME_FORMAT_NOT_ALLOWED";
-        errorMessage.message = "Name is not recognized.";
+        errorMessage = new ErrorHandler(422,"CLIENT_ERROR", "Name is empty field");   
+    }
+
+    if(isWrongLength || !isAlphabetic)
+    {
+        errorMessage = new ErrorHandler(422,"CLIENT_ERROR", "Name is not recognized.");   
     }
     
     return errorMessage;

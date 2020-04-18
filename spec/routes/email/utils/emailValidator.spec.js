@@ -5,39 +5,40 @@ describe('Email Object Validation', function () {
   describe('#validateName()', function () {
     
     it('should produce an error object if name is just numbers', function() {
-        //expect(await Email.countDocuments()).to.equal(1)
-        
         const errorObj = validateName(123);
-        //expect(errorObj).to.be.empty;
-        expect(errorObj).to.have.property('status');
+        expect(errorObj).to.have.all.keys('statusCode','status','message');
     })
 
+
     it('should produce an error object if name is empty', function() {
-      const errorObj = validateName("");
-      expect(errorObj).to.have.property('code');
-      expect(errorObj).to.have.property('status');
-      expect(errorObj).to.have.property('message');
+        const errorObj = validateName("");
+        expect(errorObj).to.have.all.keys('statusCode','status','message');
     })
+
+
     it('should produce an error object if name has less or equal to 3 characters', function() {
         const errorObj = validateName("oto");
-        expect(errorObj).to.have.property('code');
-        expect(errorObj).to.have.property('status');
-        expect(errorObj).to.have.property('message');
+        expect(errorObj).to.have.all.keys('statusCode','status','message');
     })
-    it('should produce an empty error object if name applies the rules', function() {
-      const errorObj = validateName("otto");
+
+
+    it('should produce an empty error if name is correct', function() {
+      //see min and max length in controller/utils/constants
+      const errorObj = validateName("sample");
       expect(errorObj).to.be.empty;
     })
+
   })
 
   describe('#isValidEmail()', function () {
     
+
     it('should produce an error object if email is empty', function() {
       const errorObj = validateEmail("");
-      expect(errorObj).to.have.property('code');
-      expect(errorObj).to.have.property('status');
-      expect(errorObj).to.have.property('message');
+      expect(errorObj).to.have.all.keys('statusCode','status','message');
     })
+
+
     it('should produce an error object if email is wrong', function() {
         //expect(errorObj).to.be.empty;
         const wrongEmailList = 
@@ -65,9 +66,7 @@ describe('Email Object Validation', function () {
         for( let i = 0; i < wrongEmailList.length; i++){
           const wrongEmail = wrongEmailList[i];
           errorObj = validateEmail(wrongEmail);
-          expect(errorObj).to.have.property('code');
-          expect(errorObj).to.have.property('status');
-          expect(errorObj).to.have.property('message');
+          expect(errorObj).to.have.all.keys('statusCode','status','message');
         }
 
         for( let j = 0; j < acceptedEmailList.length; j++){
@@ -78,7 +77,7 @@ describe('Email Object Validation', function () {
       
     });
     
-  })
+  })//end describe
 
   describe('#isEmpty()', function () {
     
@@ -86,10 +85,14 @@ describe('Email Object Validation', function () {
         const emailObj = {};
         expect(isEmpty(emailObj)).to.equal(true);
     })
+
+
     it('should produce FALSE if object has properties', function() {
         const emailObj = {name:"sample",email:"sample@gmail.com"};
         expect(isEmpty(emailObj)).to.equal(false);
     })
-  })
 
-})
+
+  })//end describe
+
+})//end describe

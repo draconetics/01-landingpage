@@ -1,8 +1,22 @@
+const { ErrorHandler } = require('../../models/error');
+const { validatePage, validateLimit } = require('../utils/paramValidator')
+
 const paginatedResults =  function(model){
     return async (req, res, next) => {
-        const page = parseInt(req.query.page) || 1
-        const limit = parseInt(req.query.limit) || 5
-    
+        const totalDocuments = await model
+            .countDocuments()
+            .exec()
+            .catch(e=>
+              res.status(500).json(new ErrorHandler( 500, 'SERVER_ERROR', e))
+            );
+
+        const limit = validateLimit(req)
+        const page = validatePage(req, totalDocuments, limit)  
+
+        console.log("========");
+        console.log("limit : " + limit);
+        console.log("page: " + page);
+
         const startIndex = (page - 1) * limit
         const endIndex = page * limit
     
@@ -10,26 +24,28 @@ const paginatedResults =  function(model){
         let errorHandler = {};
     
         
-        const totalDocuments = await model
-                                      .countDocuments()
-                                      .exec()
-                                      .catch(e=>
-                                        res.status(500).json(new ErrorHandler( 500, 'SERVER_ERROR', e))
-                                      );
-                                
-        if (endIndex < totalDocuments) {
-          results.next = {
-            page: page + 1,
-            limit: limit
-          }
+        
+
+        //default next page when database is empty
+        results.next = {
+          page: -1,//page no exist
+          limit: limit
+        }
+        if (endIndex < totalDocuments){
+          results.next.page = page + 1
         }
         
-        if (startIndex > 0) {
-          results.previous = {
-            page: page - 1,
-            limit: limit
-          }
+        //default previous page when database is empty
+        results.previous = {
+          page: -1,//page no exist
+          limit: limit
         }
+        if (startIndex > 0) {
+          results.previous.page = page - 1
+        }
+        //actual page
+        results.actual = { page: page }
+
         try {
           results.results = await model
                                   .find()

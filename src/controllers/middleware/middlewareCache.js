@@ -15,7 +15,7 @@ const cache = function(duration) {
             res.send = (body) => {
                 mcache.put(key, body, duration * 1000);
                 res.sendResponse(body)
-                console.log('saving cache')
+                //console.log('saving cache')
             }
             next()
         

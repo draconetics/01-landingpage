@@ -51,13 +51,7 @@ if (process.env.NODE_ENV === 'development')
 const emailsRoutes = require('./routes/emails');
 app.use('/emails', emailsRoutes);
 app.get('/',function(req,res){
-
-  //const list = ['one','two','tree'];
   let element = 'hello world';
-  // for (let index = 0; index < 1000; index++) {
-  //   element = element + '-' + list[index] + '-----';
-  // }
-
   res.send(element);
 });
 
@@ -65,12 +59,12 @@ app.get('/',function(req,res){
 const defaultRoute = require('./routes/default');
 app.use('/', defaultRoute);
 
-const PORT = process.env.PORT || 3000;
+const portConfig = require('./config/portConfig');
 db.connect()
   .then(() => {
     console.log('database connected..')
-    app.listen(PORT, () => {
-      console.log('Listening on port: ' + PORT);
+    app.listen(portConfig.PORT, () => {
+      console.log('Listening on port: ' + portConfig.PORT);
     });
   });
 
